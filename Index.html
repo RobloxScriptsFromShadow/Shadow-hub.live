@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShadowHub</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+
+html{scroll-behavior:smooth;}
+
+:root{
+--accent:#c084fc;
+--accent-strong:#8b5cf6;
+--accent-glow:rgba(200,132,252,0.34);
+--bg1:#07000f;
+--bg2:#170025;
+--bg3:#21003c;
+--text:#ecedf7;
+--panel:#1a0038;
+--shadow:#2b0a58;
+}
+
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+font-family:'Inter',sans-serif;
+min-height:100vh;
+color:var(--text);
+background:#080010;
+overflow-x:hidden;
+background-image:
+radial-gradient(circle at 20% 10%, rgba(200,132,252,0.25), transparent 27%),
+radial-gradient(circle at 80% 20%, rgba(139,92,246,0.25), transparent 33%),
+linear-gradient(135deg, var(--bg1), var(--bg2) 45%, var(--bg3));
+background-attachment:fixed;
+animation:bgShift 18s ease-in-out infinite;
+}
+
+@keyframes bgShift{
+0%{background-position:0% 0%;}
+50%{background-position:100% 100%;}
+100%{background-position:0% 0%;}
+}
+
+body:before{
+content:'';
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:radial-gradient(circle at 50% 20%, rgba(134,67,255,0.16), transparent 55%);
+pointer-events:none;
+mix-blend-mode:screen;
+}
+
+#loader{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+background:radial-gradient(circle at 50% 40%, rgba(34,8,58,0.95), rgba(9,3,24,0.92));
+backdrop-filter:blur(2px);
+box-shadow:inset 0 0 60px rgba(138,98,246,0.55);
+z-index:9999;
+}
+
+#loader .loader-ring{
+position:relative;
+width:120px;
+height:120px;
+border-radius:50%;
+border:3px solid rgba(198,140,255,0.25);
+box-shadow:0 0 25px rgba(200,132,252,0.54), inset 0 0 12px rgba(104,38,171,0.85);
+}
+
+#loader .loader-ring::after,
+#loader .loader-ring::before{
+content:'';
+position:absolute;
+left:50%;
+top:50%;
+transform:translate(-50%,-50%);
+width:100%;
+height:100%;
+border-radius:50%;
+border:2px solid rgba(208,158,255,0.4);
+}
+
+#loader .loader-ring::after{
+width:76px;
+height:76px;
+}
+
+#loader .loader-ring::before{
+width:46px;
+height:46px;
+}
+
+#loader .spinner{
+position:absolute;
+top:0;
+left:50%;
+width:14px;
+height:100%;
+background:linear-gradient(180deg, rgba(255,255,255,0.95), rgba(176,104,255,0.12));
+transform-origin:center bottom;
+animation:spin 1.58s linear infinite;
+border-radius:999px;
+box-shadow:0 0 18px rgba(240,182,255,0.95);
+}
+
+@keyframes spin{
+0%{transform:translateX(-50%) rotate(0deg);}
+100%{transform:translateX(-50%) rotate(360deg);}
+}
+
+#loader h2{
+margin:16px 0 6px;
+font-family:'Orbitron',sans-serif;
+letter-spacing:0.13em;
+font-size:18px;
+color:#fff;
+text-shadow:0 0 14px rgba(200,132,252,0.78),0 0 24px rgba(136,80,246,0.56);
+}
+
+#loader p{
+font-size:13px;
+opacity:0.85;
+color:rgba(232,216,255,0.95);
+letter-spacing:0.06em;
+}
+
+#loader .pulse-wrapper{
+margin-top:16px;
+display:flex;
+gap:8px;
+}
+
+#loader .pulse-dot{
+width:10px;
+height:10px;
+border-radius:50%;
+background:linear-gradient(45deg, rgba(221,167,255,1), rgba(161,99,255,0.6));
+box-shadow:0 0 10px rgba(200,132,252,0.8);
+animation:pulse 1.2s ease-in-out infinite;
+}
+
+#loader .pulse-dot:nth-child(2){animation-delay:0.15s;}
+#loader .pulse-dot:nth-child(3){animation-delay:0.3s;}
+
+@keyframes pulse{
+0%,100%{opacity:0.3;transform:scale(0.75);}
+50%{opacity:1;transform:scale(1.18);}
+}
+
+nav{
+position:fixed;
+z-index:50;
+width:100%;
+top:0;
+left:0;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:16px 32px;
+background:rgba(16,0,40,0.34);
+backdrop-filter:blur(12px);
+border-bottom:1px solid rgba(198,140,255,0.4);
+box-shadow:0 10px 45px rgba(0,0,0,0.35);
+}
+
+.logo{
+font-family:'Orbitron',sans-serif;
+font-size:24px;
+color:#e7c4ff;
+letter-spacing:2px;
+text-shadow:0 0 16px rgba(193,113,246,0.7);
+}
+
+nav a{
+text-decoration:none;
+color:#e7d3ff;
+margin-left:22px;
+font-weight:600;
+font-size:15px;
+position:relative;
+padding:3px 2px;
+}
+
+nav a::after{
+content:'';
+position:absolute;
+left:0;
+bottom:-4px;
+width:0;
+height:2px;
+background:linear-gradient(90deg, #f4c5ff, #b46af4);
+transition:width 0.3s ease;
+}
+
+nav a:hover::after{width:100%;}
+
+.hero{
+min-height:72vh;
+padding-top:90px;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+position:relative;
+}
+
+.hero::before{
+content:'';
+position:absolute;
+width:420px;
+height:420px;
+top:15%;
+left:50%;
+transform:translateX(-50%);
+border-radius:50%;
+background:radial-gradient(circle at 50% 50%, rgba(220,150,255,0.44), transparent 58%);
+filter:blur(40px);
+opacity:0.95;
+}
+
+.hero h1{
+font-family:'Orbitron',sans-serif;
+font-size:75px;
+line-height:1.1;
+margin:0;
+background:linear-gradient(90deg, #d0a7ff, #9872ff, #b3f8ff);
+background-clip:text;
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+color:transparent;
+text-shadow:0 0 18px rgba(210,150,255,0.62);
+animation:textGlow 4s ease-in-out infinite;
+}
+
+.hero p{
+margin-top:12px;
+opacity:0.9;
+font-size:20px;
+max-width:650px;
+color:rgba(255,246,255,0.9);
+text-shadow:0 0 12px rgba(200,130,255,0.28);
+}
+
+@keyframes textGlow{
+0%,100%{text-shadow:0 0 22px rgba(212,147,255,0.85);}
+50%{text-shadow:0 0 32px rgba(210,159,255,1.0);}
+}
+
+.section{
+padding:120px 10% 70px;
+}
+
+.section h2{
+font-family:'Orbitron',sans-serif;
+font-size:36px;
+margin-bottom:24px;
+letter-spacing:0.08em;
+background:linear-gradient(90deg, #c58cff, #8765f9, #c9a7ff);
+background-clip:text;
+-webkit-background-clip:text;
+color:transparent;
+}
+
+.categoryButtons{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-bottom:24px;
+}
+
+.categoryButtons button{
+background:linear-gradient(145deg, rgba(34,5,75,0.9), rgba(56,12,130,0.76));
+border:1px solid rgba(203,145,255,0.5);
+color:#e7e1ff;
+padding:9px 15px;
+border-radius:12px;
+cursor:pointer;
+transition:all 0.25s ease;
+box-shadow:0 6px 16px rgba(90,36,171,0.26);
+}
+
+.categoryButtons button:hover,
+.categoryButtons button.active{
+transform:translateY(-1px);
+background:linear-gradient(145deg, rgba(161,105,255,0.98), rgba(139,92,246,0.92));
+border-color:rgba(239,178,255,0.95);
+box-shadow:0 8px 22px rgba(185,92,255,0.48);
+}
+
+.filterBar{
+display:flex;
+gap:15px;
+flex-wrap:wrap;
+margin-bottom:36px;
+}
+
+#searchInput,#gameFilter{
+min-width:160px;
+padding:12px;
+border-radius:10px;
+border:1px solid rgba(178,147,255,0.7);
+background:rgba(11,1,30,0.8);
+color:white;
+outline:none;
+box-shadow:0 0 16px rgba(159,112,255,0.22);
+}
+
+#searchInput:focus,#gameFilter:focus{
+border-color:rgba(204,130,255,1);
+box-shadow:0 0 20px rgba(185,100,255,0.7);
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:28px;
+}
+
+.card{
+background:linear-gradient(155deg, rgba(28,9,63,0.95), rgba(20,8,47,0.82));
+border:1px solid rgba(200,125,255,0.20);
+padding:28px;
+border-radius:18px;
+backdrop-filter:blur(12px);
+box-shadow:0 12px 40px rgba(26,7,78,0.45);
+transition:transform 0.45s ease, box-shadow 0.45s ease, border-color 0.45s ease;
+position:relative;
+opacity:0;
+transform:translateY(22px) scale(0.98);
+}
+
+.card.show{
+opacity:1;
+transform:translateY(0) scale(1);
+}
+
+.card:hover{
+transform:translateY(-10px) scale(1.01);
+box-shadow:0 18px 56px rgba(137,80,255,0.42);
+border-color:rgba(255,205,255,0.85);
+}
+
+.card::before{
+content:'';
+position:absolute;
+top:-4px;
+left:-4px;
+right:-4px;
+bottom:-4px;
+border-radius:22px;
+background:linear-gradient(115deg, rgba(214,147,255,0.6), rgba(137,92,250,0.25), rgba(190,150,255,0.6));
+opacity:0;
+transition:opacity 0.5s ease;
+pointer-events:none;
+}
+
+.card:hover::before{opacity:1;filter:blur(6px);}
+
+.card h3{
+font-family:'Orbitron',sans-serif;
+margin-top:0;
+font-size:22px;
+letter-spacing:0.04em;
+}
+
+.status{
+font-size:14px;
+opacity:0.9;
+margin-top:7px;
+color:#f3e8ff;
+}
+
+.features{
+font-size:14px;
+opacity:0.95;
+margin-top:12px;
+line-height:1.4;
+}
+
+.paidBadge{
+position:absolute;
+top:10px;
+right:10px;
+background:linear-gradient(45deg,#ff4f8b,#ff56a4);
+color:white;
+font-size:11px;
+padding:4px 8px;
+border-radius:999px;
+font-family:'Orbitron',sans-serif;
+box-shadow:0 0 14px rgba(255,88,153,0.55);
+}
+
+.button{
+display:inline-block;
+margin-top:15px;
+padding:11px 20px;
+border-radius:10px;
+border:1px solid rgba(189,139,250,0.9);
+background:linear-gradient(135deg, rgba(95,50,190,0.95), rgba(161,94,255,0.42));
+color:#f5e7ff;
+cursor:pointer;
+font-weight:600;
+text-decoration:none;
+transition:transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.button:hover{
+transform:translateY(-2px);
+background:linear-gradient(135deg, rgba(190,120,255,0.95), rgba(156,81,255,0.9));
+box-shadow:0 12px 24px rgba(173,109,255,0.45);
+}
+
+.footer{
+text-align:center;
+padding:50px;
+opacity:0.8;
+border-top:1px solid rgba(184,125,255,0.3);
+font-size:13px;
+}
+
+#passwordBox,#errorModal{
+display:none;
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:rgba(19,8,58,0.95);
+border:1px solid rgba(175,117,255,0.75);
+padding:32px;
+border-radius:14px;
+text-align:center;
+z-index:10000;
+width:320px;
+backdrop-filter:blur(8px);
+box-shadow:0 12px 26px rgba(110,35,193,0.55);
+}
+
+#errorModal{border-color:#ff6d8f;}
+
+#passwordBox input{
+background:rgba(12,2,37,0.94);
+border:1px solid rgba(196,126,253,0.7);
+color:white;
+padding:11px;
+margin-top:10px;
+width:80%;
+border-radius:10px;
+}
+
+#modalOverlay{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(7,4,18,0.88);
+backdrop-filter:blur(5px);
+z-index:9999;
+}
+
+.closeBtn{
+position:absolute;
+top:8px;
+right:12px;
+cursor:pointer;
+opacity:0.72;
+color:#ff92b7;
+}
+
+.closeBtn:hover{opacity:1;}
+
+#checking{
+margin-top:12px;
+font-size:13px;
+opacity:0.8;
+color:#d1b8fb;
+}
+
+@keyframes shake{
+0%,100%{transform:translate(-50%,-50%)}
+25%{transform:translate(-55%,-50%)}
+75%{transform:translate(-45%,-50%)}
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="loader">
+<div class="loader-ring">
+<div class="spinner"></div>
+</div>
+<h2>SHADOWHUB ENGINEERING</h2>
+<p>Decay protocol engaging</p>
+<div class="pulse-wrapper">
+<div class="pulse-dot"></div>
+<div class="pulse-dot"></div>
+<div class="pulse-dot"></div>
+</div>
+</div>
+
+<nav>
+<div class="logo">SHADOW HUB</div>
+<div>
+<a href="#scripts">Scripts</a>
+<a href="#contact">Contact</a>
+</div>
+</nav>
+
+<div class="hero">
+<h1>ShadowHub</h1>
+<p>Premium Roblox scripting utility</p>
+</div>
+
+<div class="section" id="scripts">
+
+<h2>Scripts</h2>
+
+<div class="categoryButtons">
+<button onclick="setCategory('all')">All</button>
+<button onclick="setCategory('brainrot')">Brainrot</button>
+<button onclick="setCategory('combat')">Combat</button>
+<button onclick="setCategory('utility')">Utility</button>
+<button onclick="setCategory('grinding')">Grinding</button>
+</div>
+
+<div id="scriptCounter">Showing scripts...</div>
+
+<div class="filterBar">
+  <input type="text" id="searchInput" placeholder="Search scripts">
+  <select id="gameFilter">
+    <option value="all">All</option>
+    <option value="brainrot">Brainrot</option>
+    <option value="combat">Combat</option>
+    <option value="utility">Utility</option>
+    <option value="grinding">Grinding</option>
+  </select>
+</div>
+
+<div class="grid">
+
+    <div class="card" data-game="utility">
+<h3>Bloxy AI Chatbot</h3>
+<div class="status">Status: 🟢 Undetected</div>
+<div class="features">
+AI Chat Bot<br>
+Universal Support
+</div>
+<button class="button script-btn" type="button" data-hub="bloxyai">Get Script</button>
+</div>
+
+<div class="card" data-game="brainrot">
+<h3>Escape Tsunami Brainrot</h3>
+<div class="status">Status: 🟢 Undetected</div>
+<div class="features">
+Steal Filters (Rarity/mutation/size/generation)<br>
+Events: Select Events (Acid Rain/Storm/Tornado)<br>
+Visuals<br>
+Teleports<br>
+20+ More<br>
+</div>
+<button class="button script-btn" type="button" data-hub="tsunami">Get Script</button>
+</div>
+
+<div class="card" data-game="grinding">
+<h3>Mags Utility (Football Fusion2)</h3>
+<div class="status">Status: 🟢 Undetected</div>
+<div class="features">
+Visuals<br>
+Walkspeed<br>
+Pull Vector<br>
+Catch Resize<br>
+More!<br>
+</div>
+<button class="button script-btn" type="button" data-hub="mags">Get Script</button>
+</div>
+
+<div class="card" data-game="combat">
+<h3>Strongest Battlegrounds</h3>
+<div class="status">Status: 🟢 Undetected</div>
+<div class="features">
+Best Auto block<br>
+Ping ESP<br>
+ESPS<br>
+Death Counter ESP<br>
+High Ping Warning<br>
+and 30+ More<br>
+</div>
+<button class="button script-btn" type="button" data-hub="battlegrounds">Get Script</button>
+</div>
+
+<div class="card" data-game="combat">
+<h3>Blox Fruits Hub</h3>
+<div class="status">Status: 🟢 Undetected</div>
+<div class="features">
+Key System<br>
+Other Features Unknown<br>
+</div>
+<button class="button script-btn" type="button" data-hub="bloxfruits">Get Script</button>
+</div>
+
+<div class="card" data-game="combat">
+<div class="paidBadge">🔒 PAID</div>
+<h3>MM2 Shadow Hub</h3>
+<div class="status">Status: 🟢 Undetected</div>
+<div class="features">
+ESP & Role Detection<br>
+Gun Notifier<br>
+Auto Shoot
+</div>
+<button class="button script-btn" type="button" data-hub="mm2">Get Script</button>
+</div>
+
+<div class="card" data-game="brainrot">
+<h3>Chilli Hub</h3>
+<div class="status">Status: 🟢 Undetected</div>
+<div class="features">
+X-Ray & ESP<br>
+Anti-ragdoll<br>
+Infinite Jump
+</div>
+<button class="button script-btn" type="button" data-hub="sab">Get Script</button>
+</div>
+
+<div class="card" data-game="combat">
+<h3>Simple Auto Parry</h3>
+<div class="status">Status: 🟢 Undetected</div>
+<div class="features">
+Auto Parry<br>
+Keyless
+</div>
+<button class="button script-btn" type="button" data-hub="bladeball">Get Script</button>
+</div>
+
+<div class="card" data-game="utility">
+<h3>Infinite Yield</h3>
+<div class="status">Status: 🟢 Undetected</div>
+<div class="features">
+Fly & Noclip<br>
+Dark Dex<br>
+Command Bar
+</div>
+<button class="button script-btn" type="button" data-hub="universal">Get Script</button>
+</div>
+
+</div>
+</div>
+
+<div class="section" id="contact">
+<h2>Contact</h2>
+<p>Discord: imjustthatguy1_11</p>
+</div>
+
+<div class="footer">
+© 2026 ShadowHub
+</div>
+
+<div id="modalOverlay" onclick="closeAllModals()"></div>
+
+<div id="passwordBox">
+<div class="closeBtn" onclick="closeAllModals()">✖</div>
+<h3 style="font-family:Orbitron">ENTER KEY</h3>
+<input type="password" id="pass" placeholder="Enter security key">
+<br>
+<button class="button" onclick="checkPassword()">Unlock</button>
+<div id="checking">Please Enter Password.</div>
+</div>
+
+<div id="errorModal">
+<h3 style="color:#ff0055;font-family:Orbitron;margin-top:0;">ACCESS DENIED</h3>
+<p style="font-size:14px;color:#ff0055cc;">Invalid security key</p>
+<button class="button" style="border-color:#ff0055;color:#ff0055" onclick="closeAllModals()">Retry</button>
+</div>
+
+<div id="scriptMenu" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(92vw,860px);max-height:88vh;overflow:auto;background:rgba(26,4,38,0.96);border:1px solid #b47aff88;border-radius:14px;box-shadow:0 0 30px rgba(180,110,255,0.35);z-index:10001;padding:16px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+    <h3 style="margin:0;color:#c98cff;font-family:'Orbitron';letter-spacing:1px;">Script Menu</h3>
+    <button id="closeScriptMenu" style="background:#130b1e;color:#c98cff;border:1px solid #c98cff;border-radius:8px;padding:5px 10px;cursor:pointer;">×</button>
+  </div>
+  <p id="scriptMenuHub" style="color:#d6ffdd;margin:0 0 12px;font-size:14px;"></p>
+  <div id="scriptMenuList" style="display:grid;gap:12px;"></div>
+  <div style="margin-top:10px;"><textarea id="scriptMenuCode" readonly style="width:100%;height:110px;background:#140719;color:#d6a8ff;border:1px solid #bf7fff;border-radius:8px;padding:10px;font-family:'Share Tech Mono';overflow:auto;resize:none;color:#d8b5ff;"></textarea></div>
+  <div style="margin-top:10px;display:flex;gap:10px;justify-content:flex-end;"><button id="copyScriptMenu" style="background:#130d20;color:#d8b5ff;border:1px solid #c78cff;border-radius:8px;padding:8px 12px;cursor:pointer;">Copy</button><button id="closeScriptMenu2" style="background:#130d20;color:#d8b5ff;border:1px solid #c78cff;border-radius:8px;padding:8px 12px;cursor:pointer;">Close</button></div>
+</div>
+
+<div id="remoteHubContainer" style="display:none;position:fixed;inset:0;z-index:10002;background:rgba(8,4,22,0.96);overflow:auto;padding:20px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+    <h3 style="margin:0;color:#00ff9c;font-family:'Orbitron';letter-spacing:1px;">Loaded Hub</h3>
+    <button onclick="closeRemoteHub()" style="background:#0a0a0a;color:#00ff9c;border:1px solid #00ff9c;border-radius:8px;padding:5px 10px;cursor:pointer;">Close</button>
+  </div>
+  <div id="remoteHubContent" style="background:#0a0a0a;border:1px solid #00ff9c;border-radius:10px;padding:15px;color:#d2f4d2;"></div>
+</div>
+
+<div id="copyNotify">Script copied</div>
+
+<script>
+
+const loaderSteps=[
+"BOOT STRAP GRID",
+"CALIBRATING NEON NODE",
+"AMPLIFY PURPLE ECHO",
+"READY FOR SHADOW MODE"
+];
+
+const loaderHeader=document.querySelector('#loader h2');
+const loaderPhrase=document.querySelector('#loader p');
+let loaderIndex=0;
+
+const loaderTicker=setInterval(()=>{
+if(loaderIndex<loaderSteps.length){
+loaderPhrase.textContent=loaderSteps[loaderIndex];
+loaderHeader.style.textShadow=`0 0 16px rgba(212,${120+loaderIndex*5},255,0.95)`;
+loaderIndex++;
+} else {
+clearInterval(loaderTicker);
+}
+},750);
+
+function finishLoader(){
+const loader=document.getElementById('loader');
+loader.style.opacity='0';
+loader.style.transition='opacity 0.85s ease';
+setTimeout(()=>{loader.style.display='none';},850);
+}
+
+setTimeout(finishLoader,3300);
+
+let currentHub=""
+
+function openPassword(hub){
+currentHub=hub
+document.getElementById("passwordBox").style.display="block"
+document.getElementById("modalOverlay").style.display="block"
+}
+
+function closeAllModals(){
+document.getElementById("passwordBox").style.display="none"
+document.getElementById("errorModal").style.display="none"
+document.getElementById("modalOverlay").style.display="none"
+document.getElementById("passwordBox").classList.remove("shake")
+}
+
+async function sha256(str){
+const buf=new TextEncoder().encode(str||"");
+const hash=await crypto.subtle.digest('SHA-256', buf);
+return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function checkPassword(){
+const passwordInput=document.getElementById("pass")
+const passwordBox=document.getElementById("passwordBox")
+const checking=document.getElementById("checking")
+checking.style.display="block"
+passwordBox.classList.remove("shake")
+
+try{
+const passwordValue = passwordInput.value || "";
+const passwordHash = await sha256(passwordValue);
+if(currentHub === 'mm2'){
+  if(passwordHash === MM2_HASH){
+    const rawToken='local-mm2-unlocked';
+    const secureHash = await sha256(rawToken + TOKEN_SALT);
+
+    sessionStorage.setItem("shadow_token", secureHash);
+    sessionStorage.setItem("shadow_token_raw", rawToken);
+
+    closeAllModals();
+
+
+    showScriptMenu("mm2");
+
+    return;
+  }
+}
+
+if(currentHub !== 'mm2'){
+  const page = SCRIPT_PAGES[currentHub];
+  if(page){
+    closeAllModals();
+    loadHubFromGithub(currentHub);
+    return;
+  }
+}
+
+if(passwordHash === MM2_HASH){
+  const rawToken = Date.now().toString();
+  const secureHash = await sha256(rawToken + TOKEN_SALT);
+
+  sessionStorage.setItem("shadow_token", secureHash);
+  sessionStorage.setItem("shadow_token_raw", rawToken);
+
+  closeAllModals();
+  showScriptMenu(currentHub);
+} else {
+  passwordBox.classList.add("shake");
+  setTimeout(()=>{
+    passwordBox.style.display="none";
+    document.getElementById("errorModal").style.display="block";
+  },400);
+}
+}catch(err){
+alert("Backend offline")
+}
+
+checking.style.display="none"
+}
+
+const TOKEN_SALT="mV3tn8kLq4dRHZ##Y";
+const MM2_HASH = "9871b54e90be561200f8b18a744469dd551d03d572683760fb91dd85595fca47";;
+const SCRIPT_PAGES = {
+  mm2: 'MM2-Shadow-Hub.html',
+  sab: 'Chilli-Hub.html',
+  bladeball: 'Simple-AP-Bladeball.html',
+  universal: 'inf-yield.html'
+};
+const SCRIPT_RAW_URLS = {
+  mm2: 'https://raw.githubusercontent.com/yourname/yourrepo/main/MM2-Shadow-Hub.html',
+  sab: 'https://raw.githubusercontent.com/yourname/yourrepo/main/Chilli-Hub.html',
+  bladeball: 'https://raw.githubusercontent.com/yourname/yourrepo/main/Simple-AP-Bladeball.html',
+  universal: 'https://raw.githubusercontent.com/yourname/yourrepo/main/inf-yield.html'
+};
+const HUB_HASHES = {
+  mm2: "9871b54e90be561200f8b18a744469dd551d03d572683760fb91dd85595fca47"
+};
+const SCRIPT_MAP = {
+
+  mm2: btoa("loadstring(game:HttpGet(\"https://pastebin.com/raw/ha5Da5WE\"))()"),
+
+  bladeball: btoa("loadstring(game:HttpGet(\"https://raw.githubusercontent.com/Akash1al/Blade-Ball-Updated-Script/refs/heads/main/Blade-Ball-Script\"))()"),
+
+  sab: btoa("loadstring(game:HttpGet(\"https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua\"))()"),
+
+  universal: btoa("loadstring(game:HttpGet(\"https://rawscripts.net/raw/Universal-Script-Infinite-Yield-43437\"))()"),
+
+  bloxyai: btoa("loadstring(game:HttpGet(\"https://raw.githubusercontent.com/UltraFEmotes/BloxyAI/refs/heads/main/main.lua\"))()"),
+
+  tsunami: btoa("loadstring(game:HttpGet(\"https://api.luarmor.net/files/v4/loaders/8df8114bc794c926c3a435fc00ca3106.lua\"))()"),
+
+  mags: btoa("loadstring(game:HttpGet(\"https://cdn.snc.dev/69a3119532794750001823ca/mn8zhw8gldl\"))()"),
+
+  battlegrounds: btoa("loadstring(game:HttpGet(\"https://raw.githubusercontent.com/hellattexyss/waspire/refs/heads/main/waspirescripts.lua\"))()"),
+
+  bloxfruits: btoa("loadstring(game:HttpGet(\"https://api.luarmor.net/files/v3/loaders/d5ed1fbd4301b1d18d75153c5b47181d.lua\"))()")
+
+};
+const SCRIPT_HASHES = {
+
+  mm2: "e796e073f721fc1ee6290d6707d02a4e5bc4c8c3636a908e283e38891e5bb140",
+
+  bladeball: "daa70c37f62aee3d1f896c4e458386643dc2a46642ec7fe9c4fef25705e0be57",
+
+  sab: "76d9179f5cf550856d00653b5921e82c0682046e7f1b2b00b1f83308cca15309",
+
+  universal: "3cc10e2bf3b270b1d40ec712ef5c8df865c72c03e827fc66cb7736a14019c300",
+
+  bloxyai: "cb30b3fd357d2d797ff229a4c4eda6cbcf53faceac1b70a8e06d8b25bcda422c",
+
+  tsunami: "429aaed4b9d86985de43af44cadd9948a28bd3bc98ffd3b3a3f4339a56eaed5d",
+
+  mags: "b403b373d3e6e76021a87e6dfbbe1b25f4e530b96d08a1cac08dc52029098309",
+
+  battlegrounds: "40a668687a580d1825d4b332a7c8c7e898d942836910a3788eae602945d50d26",
+
+  bloxfruits: "99c9b0d95fedf9f7112ab2c78411e052b52ce21c00d2ae1e8766de31687f2484"
+
+};
+const SCRIPT_LABEL = {
+
+  mm2: "MM2 Shadow Hub",
+  bladeball: "Simple Auto Parry",
+  sab: "Chilli Hub (SAB)",
+  universal: "Infinite Yield",
+
+  bloxyai: "Bloxy AI Chatbot",
+  tsunami: "Escape Tsunami",
+  mags: "Mags Utility",
+  battlegrounds: "Strongest Battlegrounds",
+  bloxfruits: "Blox Fruits Hub"
+
+};
+
+const searchInput=document.getElementById("searchInput")
+const gameFilter=document.getElementById("gameFilter")
+const cards=document.querySelectorAll(".card")
+const counter=document.getElementById("scriptCounter")
+
+async function tokenOk(){
+  const raw = sessionStorage.getItem("shadow_token_raw");
+  const hashed = sessionStorage.getItem("shadow_token");
+  if(!raw || !hashed) return false;
+  return await sha256(raw + TOKEN_SALT) === hashed;
+}
+
+function closeRemoteHub(){
+  const container=document.getElementById('remoteHubContainer');
+  const content=document.getElementById('remoteHubContent');
+  container.style.display='none';
+  content.innerHTML='';
+}
+
+async function loadHubFromGithub(hub){
+  const url = SCRIPT_RAW_URLS[hub];
+  const container = document.getElementById('remoteHubContainer');
+  const content = document.getElementById('remoteHubContent');
+  if(!url){
+    content.textContent = 'No GitHub raw URL configured for this hub.';
+    container.style.display='block';
+    return;
+  }
+
+  container.style.display='block';
+  content.textContent = 'Loading from GitHub...' ;
+
+  try{
+    const response = await fetch(url);
+    if(!response.ok) throw new Error(`Fetch failed ${response.status}`);
+    const text = await response.text();
+ 
+    content.innerHTML = text;
+  }catch(err){
+    content.textContent = `Unable to load remote hub content: ${err.message}`;
+  }
+}
+
+function decodeScript(name){
+  if(!SCRIPT_MAP[name]) return "";
+  return atob(SCRIPT_MAP[name]);
+}
+
+async function showScriptMenu(hub){
+  const menu = document.getElementById("scriptMenu");
+  const list = document.getElementById("scriptMenuList");
+  const selectedHub = hub || "all";
+  document.getElementById("scriptMenuHub").textContent = "Hub: " + (SCRIPT_LABEL[selectedHub] || "All Scripts");
+  list.innerHTML = "";
+
+  const keys = selectedHub === "all" ? Object.keys(SCRIPT_MAP) : [selectedHub];
+  keys.forEach(key=>{
+    if(!SCRIPT_MAP[key]) return;
+    const btn = document.createElement("button");
+    btn.textContent = SCRIPT_LABEL[key] || key;
+    btn.style.width = "100%";
+    btn.style.padding = "10px";
+    btn.style.border = "1px solid #c78cff";
+    btn.style.background = "#140819";
+    btn.style.color = "#d8b5ff";
+    btn.style.cursor = "pointer";
+    btn.style.marginBottom = "8px";
+    btn.addEventListener("click", ()=>{
+      const decoded = decodeScript(key);
+      sha256(decoded).then(hash=>{
+        const styleText = document.getElementById("scriptMenuCode");
+        if(SCRIPT_HASHES[key] && SCRIPT_HASHES[key] !== hash){
+          styleText.value = "Script integrity check failed (hash mismatch).";
+          styleText.style.color = "#ff5454";
+        } else {
+          styleText.value = decoded;
+          styleText.style.color = "#d8b5ff";
+        }
+      });
+    });
+    list.appendChild(btn);
+  });
+
+  const codeArea = document.getElementById("scriptMenuCode");
+  if(keys.length === 1 && SCRIPT_MAP[keys[0]]){
+    const autoValue = decodeScript(keys[0]);
+    const autoHash = await sha256(autoValue);
+    if(SCRIPT_HASHES[keys[0]] && SCRIPT_HASHES[keys[0]] === autoHash){
+      codeArea.value = autoValue;
+      codeArea.style.color = "#d8b5ff";
+    } else {
+      codeArea.value = "Script integrity check failed (hash mismatch).";
+      codeArea.style.color = "#ff5454";
+    }
+  } else {
+    codeArea.value = "";
+    codeArea.style.color = "#d8b5ff";
+  }
+
+  menu.style.display = "block";
+}
+
+const closeScriptMenu = () => document.getElementById("scriptMenu").style.display="none";
+
+const copyScript = () => {
+  const code = document.getElementById("scriptMenuCode");
+  const txt = code.value;
+  if(!txt) return;
+
+  const success = ()=>{
+    const cNotify = document.getElementById("copyNotify");
+    if(cNotify){
+      cNotify.textContent = "Script copied";
+      cNotify.style.opacity = "1";
+      setTimeout(()=>{cNotify.style.opacity = "0";},1700);
+    }
+  };
+
+  const fallback = () => {
+    const area = document.createElement("textarea");
+    area.value = txt;
+    document.body.appendChild(area);
+    area.select();
+    try {
+      document.execCommand("copy");
+      success();
+    } catch (e) {
+      alert("Copy failed. Please copy manually.");
+    }
+    document.body.removeChild(area);
+  };
+
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(success).catch(fallback);
+  } else {
+    fallback();
+  }
+};
+
+let currentCategory="all"
+
+function setCategory(cat){
+currentCategory=cat
+filterScripts()
+}
+
+function filterScripts(){
+let search=searchInput.value.toLowerCase()
+let game=gameFilter.value
+let visible=0
+
+cards.forEach(card=>{
+let title=card.querySelector("h3").innerText.toLowerCase()
+let cardGame=card.getAttribute("data-game")
+
+let matchSearch=title.includes(search)
+let matchGame=game==="all"||cardGame===game
+let matchCategory=currentCategory==="all"||cardGame===currentCategory
+
+if(matchSearch&&matchGame&&matchCategory){
+card.style.display="block"
+visible++
+}else{
+card.style.display="none"
+}
+})
+
+counter.innerText="Showing "+visible+" script(s)"
+}
+
+searchInput.addEventListener("input",filterScripts)
+gameFilter.addEventListener("change",filterScripts)
+
+filterScripts()
+
+const observer=new IntersectionObserver(entries=>{
+entries.forEach(entry=>{
+if(entry.isIntersecting){
+entry.target.classList.add("show")
+}
+})
+})
+
+document.querySelectorAll(".card").forEach(card=>observer.observe(card))
+
+document.querySelectorAll('.script-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const hub = btn.dataset.hub;
+    if(!hub) return;
+
+    if(hub === "mm2"){
+
+      openPassword(hub);
+    } else {
+      showScriptMenu(hub);
+    }
+  });
+});
+
+document.getElementById('closeScriptMenu').addEventListener('click', ()=>{closeScriptMenu();});
+document.getElementById('closeScriptMenu2').addEventListener('click', ()=>{closeScriptMenu();});
+document.getElementById('copyScriptMenu').addEventListener('click', copyScript);
+
+</script>
+
+</body>
+</html>
